@@ -2,7 +2,7 @@
  * 
  */
 /**
- * @author Markus S.
+ * @author Markus Schubsky
  *
  */
 package tank;
