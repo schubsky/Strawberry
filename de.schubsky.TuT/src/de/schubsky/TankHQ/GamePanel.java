@@ -71,8 +71,8 @@ public class GamePanel extends JPanel{
     
 	private void createGameObjects() {
 		// later: creating game objects
-		testMissile1 = new Missile(new Coordinate(200, 100), 9, Math.toRadians(45), 16);
-		testMissile2 = new Missile(new Coordinate(200, 609), 15, Math.toRadians(-45), 15);
+		testMissile1 = new Missile(new Coordinate(200, 100), 9, Math.toRadians(45), 5);
+		testMissile2 = new Missile(new Coordinate(200, 609), 15, Math.toRadians(-45), 5);
 	} 
     
 	private void initPlayersTank() {        
