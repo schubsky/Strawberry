@@ -27,6 +27,8 @@ public class GamePanel extends JPanel{
 	private Missile testMissile1;
 	private Missile testMissile2;
 	
+	private Tank testTank;
+	
 	public static final String IMAGE_DIR = "/images/";
     
 	private final Dimension prefSize = new Dimension(1180, 780);
@@ -60,6 +62,8 @@ public class GamePanel extends JPanel{
 	private void initGame () {
 		setBackgroundImage(2);
 		createGameObjects();
+		
+		initPlayersTank();
        
 		timer = new Timer(20, new ActionListener() {
 			@Override
@@ -71,12 +75,17 @@ public class GamePanel extends JPanel{
     
 	private void createGameObjects() {
 		// later: creating game objects
-		testMissile1 = new Missile(new Coordinate(200, 100), 9, Math.toRadians(45), 5);
-		testMissile2 = new Missile(new Coordinate(200, 609), 15, Math.toRadians(-45), 5);
+		testMissile1 = new Missile(new Coordinate(200, 100), 15, Math.toRadians(45), 5);
+		testMissile2 = new Missile(new Coordinate(200, 600), 15, Math.toRadians(-45), 5);
 	} 
     
 	private void initPlayersTank() {        
 		// later: initialize tank of player
+		testTank = new Tank(new Coordinate(600, 250), 160, 100, Math.toRadians(270), 0);
+		testTank.accelerateTank();
+		testTank.turnTankLeft();
+		testTank.turnCannonRight();
+		testMissile1 = testTank.shoot();
 	}
     
 	public void setBackgroundImage(int imageNumber) {
@@ -120,7 +129,11 @@ public class GamePanel extends JPanel{
 		
 		testMissile1.makeMove();
 		testMissile2.makeMove();
-		if (testMissile1.touches(testMissile2)) endGame();
+		//if (testMissile1.touches(testMissile2)) endGame();
+		
+		testTank.makeMove();
+		if (testTank.touches(testMissile2))	endGame();
+		if (testTank.isAbleToShoot()) testMissile1 = testTank.shoot();
         
 		repaint();
 	}
@@ -143,6 +156,7 @@ public class GamePanel extends JPanel{
 	    	g.setColor(Color.RED);
 	    	g.drawString("Noob Down!", prefSize.width/2 - 130, prefSize.height/5);
 	    }
+	    testTank.paintMe(g);
 	    
 	    testMissile1.paintMe(g);
 	    testMissile2.paintMe(g);
