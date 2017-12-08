@@ -1,12 +1,5 @@
 package de.schubsky.TankHQ;
 
-/**
- * 
- * @author Markus Schubsky
- * @version 1.0
- *
- */
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -15,11 +8,20 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.*;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+/**
+ * 
+ * @author Markus Schubsky
+ * @version 1.0
+ *
+ */
 
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel{
@@ -28,6 +30,8 @@ public class GamePanel extends JPanel{
 	private Missile testMissile2;
 	
 	private Tank testTank;
+	
+	private EnemyTank testEnemyTank;
 	
 	public static final String IMAGE_DIR = "/images/";
     
@@ -71,21 +75,59 @@ public class GamePanel extends JPanel{
 				doOnTick();     
 			}
 		});
+		
+		addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+				switch(e.getKeyCode()) {
+					case VK_SPACE:
+						if(testTank.isAbleToShoot()) {
+							testMissile1 = testTank.shoot();
+						}
+						break;
+					case VK_DOWN:
+					case VK_UP: testTank.stopTank(); break;
+				
+					case VK_LEFT:
+					case VK_RIGHT: testTank.stopTurningTank(); break;
+				
+					case VK_W:
+					case VK_E: testTank.stopTurningCannon(); break;
+				}
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyCode()) {
+                	case VK_LEFT: testTank.turnTankLeft(); break;
+                	case VK_RIGHT: testTank.turnTankRight(); break;
+                        
+                	case VK_UP: testTank.accelerateTank(); break;
+                	case VK_DOWN: testTank.decelerateTank(); break;
+                        
+                	case VK_W: testTank.turnCannonLeft(); break;
+                	case VK_E: testTank.turnCannonRight(); break;
+				}
+			}
+		});
 	}
     
 	private void createGameObjects() {
 		// later: creating game objects
 		testMissile1 = new Missile(new Coordinate(200, 100), 15, Math.toRadians(45), 5);
 		testMissile2 = new Missile(new Coordinate(200, 600), 15, Math.toRadians(-45), 5);
+		
+		testEnemyTank = new EnemyTank(new Coordinate(40, 600), 80, 50, Math.toRadians(-20), 0, testTank);
 	} 
     
 	private void initPlayersTank() {        
 		// later: initialize tank of player
-		testTank = new Tank(new Coordinate(600, 250), 160, 100, Math.toRadians(270), 0);
-		testTank.accelerateTank();
+		testTank = new Tank(new Coordinate(600, 250), 70, 45, Math.toRadians(270), 0);
+		/*testTank.accelerateTank();
 		testTank.turnTankLeft();
 		testTank.turnCannonRight();
-		testMissile1 = testTank.shoot();
+		testMissile1 = testTank.shoot();*/
 	}
     
 	public void setBackgroundImage(int imageNumber) {
@@ -133,7 +175,13 @@ public class GamePanel extends JPanel{
 		
 		testTank.makeMove();
 		if (testTank.touches(testMissile2))	endGame();
-		if (testTank.isAbleToShoot()) testMissile1 = testTank.shoot();
+		//if (testTank.isAbleToShoot()) testMissile1 = testTank.shoot();
+		//if(testMissile2.getRange() < 1) testMissile2 = new Missile(new Coordinate(200, 609), 9, Math.toRadians(-45), 5);
+		
+		testEnemyTank.setPlayersTank(testTank);
+		testEnemyTank.makeMove();
+		if (testEnemyTank.isTargetLocked() && testEnemyTank.isAbleToShoot()) testMissile2 = testEnemyTank.shoot();
+		if (testEnemyTank.touches(testMissile1)) endGame();
         
 		repaint();
 	}
@@ -157,6 +205,8 @@ public class GamePanel extends JPanel{
 	    	g.drawString("Noob Down!", prefSize.width/2 - 130, prefSize.height/5);
 	    }
 	    testTank.paintMe(g);
+	    
+	    testEnemyTank.paintMe(g);
 	    
 	    testMissile1.paintMe(g);
 	    testMissile2.paintMe(g);
