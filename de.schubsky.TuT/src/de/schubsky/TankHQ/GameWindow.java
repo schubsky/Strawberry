@@ -21,10 +21,12 @@ import java.awt.event.WindowEvent;
 public class GameWindow extends JFrame{
     
     private final GamePanel tankGamePanel;
+    private final ChooseTankColorDialog chooseTankColorDialog;
     
     public GameWindow() {   
         
         this.tankGamePanel = new GamePanel();
+        chooseTankColorDialog = new ChooseTankColorDialog(this, tankGamePanel);
                 
         registerWindowListener();
         createMenu();
@@ -105,6 +107,21 @@ public class GameWindow extends JFrame{
 	}
 	
 	public void addPrefMenuItems(JMenu prefMenu) {
+		
+		JMenuItem changeColorItem = new JMenuItem("Change the Tank's Color..");
+		prefMenu.add(changeColorItem);
+		
+		changeColorItem.addActionListener(new ActionListener() {
+			@Override 
+			public void actionPerformed(ActionEvent e) {
+				
+				tankGamePanel.pauseGame();
+				chooseTankColorDialog.pack();
+				chooseTankColorDialog.setLocation(300, 200);
+				chooseTankColorDialog.setVisible(true);
+			}
+		});
+		
 		JMenu submenu = new JMenu("Your Background");
 		prefMenu.add(submenu);
 		
